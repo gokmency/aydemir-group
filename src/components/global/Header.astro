@@ -23,10 +23,11 @@ const nav = [
       <span>Menü</span><i aria-hidden="true"></i>
     </button>
   </div>
-  <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+</header>
+  <dialog class="mobile-menu" id="mobile-menu" aria-label="Ana menü">
     <div class="mobile-menu__top container-wide">
       <span class="eyebrow">Durmuş Aydemir Group</span>
-      <button class="menu-close" type="button" aria-label="Menüyü kapat">Kapat <span aria-hidden="true">×</span></button>
+      <button class="menu-close" type="button" aria-label="Menüyü kapat" autofocus>Kapat <span aria-hidden="true">×</span></button>
     </div>
     <nav aria-label="Mobil menü">
       <a href="/">Ana Sayfa</a>
@@ -36,23 +37,51 @@ const nav = [
       <a href={`tel:${site.phoneHref}`}>{site.phoneDisplay}</a>
       <span>Kepez, Antalya</span>
     </div>
-  </div>
-</header>
+  </dialog>
 <script>
   const header = document.querySelector('[data-header]');
-  const toggle = document.querySelector('.menu-toggle');
+  const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
   const close = document.querySelector('.menu-close');
-  const panel = document.querySelector('#mobile-menu');
-  const setOpen = (open: boolean) => {
-    toggle?.setAttribute('aria-expanded', String(open));
-    panel?.setAttribute('aria-hidden', String(!open));
-    document.body.classList.toggle('menu-open', open);
+  const panel = document.querySelector<HTMLDialogElement>('#mobile-menu');
+  const desktop = matchMedia('(min-width: 981px)');
+  let scrollPosition = 0;
+  let locked = false;
+
+  const restorePage = () => {
+    if (!locked) return;
+    locked = false;
+    document.body.classList.remove('menu-open');
+    document.documentElement.classList.remove('menu-open');
+    document.body.style.removeProperty('--menu-scroll-top');
+    toggle?.setAttribute('aria-expanded', 'false');
+    if (!desktop.matches) toggle?.focus({ preventScroll: true });
+    window.scrollTo({ top: scrollPosition, behavior: 'instant' });
   };
-  toggle?.addEventListener('click', () => setOpen(true));
-  close?.addEventListener('click', () => setOpen(false));
-  panel?.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => setOpen(false)));
-  document.addEventListener('keydown', (event) => { if (event.key === 'Escape') setOpen(false); });
-  const updateHeader = () => header?.classList.toggle('is-scrolled', window.scrollY > 24);
+  const closeMenu = () => {
+    panel?.close();
+    restorePage();
+  };
+  const openMenu = () => {
+    if (!panel || panel.open || desktop.matches) return;
+    scrollPosition = window.scrollY;
+    locked = true;
+    document.body.style.setProperty('--menu-scroll-top', `-${scrollPosition}px`);
+    document.documentElement.classList.add('menu-open');
+    document.body.classList.add('menu-open');
+    toggle?.setAttribute('aria-expanded', 'true');
+    panel.showModal();
+  };
+  toggle?.addEventListener('click', openMenu);
+  close?.addEventListener('click', closeMenu);
+  panel?.querySelectorAll('a').forEach((link) => link.addEventListener('click', closeMenu));
+  panel?.addEventListener('cancel', (event) => {
+    event.preventDefault();
+    closeMenu();
+  });
+  panel?.addEventListener('close', () => { if (!panel.open) restorePage(); });
+  desktop.addEventListener('change', () => { if (desktop.matches) closeMenu(); });
+  addEventListener('pageshow', closeMenu);
+  const updateHeader = () => header?.classList.toggle('is-scrolled', (locked ? scrollPosition : window.scrollY) > 24);
   updateHeader();
   addEventListener('scroll', updateHeader, { passive: true });
 </script>
