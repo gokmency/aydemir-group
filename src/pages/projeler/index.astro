@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectCard from '../../components/project/ProjectCard.astro';
+import ContactCTA from '../../components/ui/ContactCTA.astro';
+import { projects } from '../../data/projects';
+const statuses = ['Tümü', 'Devam Eden', 'Tamamlanan'] as const;
+---
+<BaseLayout title="Antalya Konut Projeleri | Durmuş Aydemir Group" description="Durmuş Aydemir Group’un Antalya’daki tamamlanan ve devam eden konut projelerini inceleyin.">
+  <header class="page-hero"><div class="container-wide"><nav class="breadcrumbs" aria-label="Sayfa yolu"><a href="/">Ana Sayfa</a><span>/</span><span>Projeler</span></nav><span class="eyebrow hero-label">Portföy</span><h1 class="display">Projeler</h1><p>Antalya’nın farklı bölgelerinde hayata geçirilen tamamlanan ve devam eden projeler.</p></div></header>
+  <section class="projects-listing">
+    <div class="container-wide project-toolbar" data-reveal>
+      <div class="filters" role="group" aria-label="Projeleri duruma göre filtrele">{statuses.map((status, index) => <button class:list={[index === 0 && 'is-active']} type="button" data-filter={status}>{status}<span>{status === 'Tümü' ? projects.length : projects.filter((p) => p.status === status).length}</span></button>)}</div>
+      <p><span data-count>{projects.length}</span> proje gösteriliyor</p>
+    </div>
+    <div class="container-wide projects-grid" data-project-grid>{projects.map((project,index) => <ProjectCard project={project} index={index} />)}</div>
+    <div class="container-wide no-result" hidden>Bu filtrede gösterilecek proje bulunmuyor.</div>
+  </section>
+  <ContactCTA />
+</BaseLayout>
+<script>
+  const filterButtons = [...document.querySelectorAll<HTMLElement>('[data-filter]')];
+  const cards = [...document.querySelectorAll<HTMLElement>('[data-status]')];
+  const counter = document.querySelector<HTMLElement>('[data-count]');
+  const empty = document.querySelector<HTMLElement>('.no-result');
+  filterButtons.forEach((button) => button.addEventListener('click', () => {
+    const filter = button.dataset.filter;
+    filterButtons.forEach((item) => item.classList.toggle('is-active', item === button));
+    let visible = 0;
+    cards.forEach((card) => {
+      const show = filter === 'Tümü' || card.dataset.status === filter;
+      card.hidden = !show;
+      if (show) visible++;
+    });
+    if (counter) counter.textContent = String(visible);
+    if (empty) empty.hidden = visible !== 0;
+  }));
+</script>
+<style>
+  .page-hero p{max-width:55ch;margin:28px 0 0;color:var(--muted);font-size:18px}.hero-label{margin-top:80px}.projects-listing{padding:clamp(70px,9vw,130px) 0}.project-toolbar{margin-bottom:70px;display:flex;justify-content:space-between;align-items:end;border-bottom:1px solid var(--border)}.filters{display:flex;gap:28px;overflow-x:auto}.filters button{position:relative;min-height:50px;padding:0 0 18px;border:0;color:var(--muted);background:none;white-space:nowrap;cursor:pointer}.filters button::after{content:"";position:absolute;right:100%;bottom:-1px;left:0;height:2px;background:var(--foreground);transition:right .3s}.filters button.is-active{color:var(--foreground)}.filters button.is-active::after{right:0}.filters span{margin-left:7px;font:9px var(--mono)}.project-toolbar p{margin:0 0 18px;color:var(--muted);font-size:12px}.projects-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px 24px}.projects-grid article:nth-child(4n+2),.projects-grid article:nth-child(4n+3){margin-top:70px}.no-result{padding:70px 0;color:var(--muted)}@media(max-width:700px){.project-toolbar{align-items:start;flex-direction:column;gap:20px}.project-toolbar p{display:none}.projects-grid{grid-template-columns:1fr;gap:36px}.projects-grid article:nth-child(n){margin-top:0}}
+</style>

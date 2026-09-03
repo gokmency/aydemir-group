@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectGallery from '../../components/project/ProjectGallery.astro';
+import PropertyCard from '../../components/property/PropertyCard.astro';
+import ContactCTA from '../../components/ui/ContactCTA.astro';
+import { properties } from '../../data/properties';
+import type { Property } from '../../data/properties';
+export function getStaticPaths(){ return properties.map((property) => ({params:{slug:property.slug},props:{property}})); }
+interface Props { property: Property }
+const { property } = Astro.props as Props;
+const images = [property.coverImage,...property.gallery].filter(Boolean) as string[];
+const related = properties.filter((item) => item.slug !== property.slug).slice(0,3);
+---
+<BaseLayout title={`${property.name} | Durmuş Aydemir Group`} description={`${property.name} ilanı ve proje görselleri.`} image={property.coverImage ?? '/images/projects/aydemir-cadde/cover.avif'} canonical={`/emlak/${property.slug}/`}>
+  <header class="listing-hero"><div class="container-wide listing-hero__grid"><div><nav class="breadcrumbs" aria-label="Sayfa yolu"><a href="/">Ana Sayfa</a><span>/</span><a href="/emlak/">Emlak</a><span>/</span><span>İlan</span></nav><span class="eyebrow listing-label">Emlak ilanı</span><h1>{property.name}</h1><div class="listing-tags">{property.roomTypes.map((type)=><span>{type}</span>)}{property.location&&<span>{property.location}</span>}</div><a class="button" href={`https://wa.me/905404175353?text=${encodeURIComponent(property.name+' hakkında bilgi almak istiyorum.')}`} target="_blank" rel="noopener noreferrer">Bilgi alın ↗</a></div><div class="listing-hero__media">{property.coverImage?<img src={property.coverImage} alt={`${property.name} görünümü`} width="1200" height="1000" fetchpriority="high"/>:<div class="empty-media">{property.name}</div>}</div></div></header>
+  <ProjectGallery images={images} name={property.name}/>
+  {property.sections.length>0&&<section class="listing-content"><div class="container">{property.sections.map((section)=><section>{section.title&&<h2>{section.title}</h2>}{section.body&&<p>{section.body}</p>}{section.items&&<ul>{section.items.map((item)=><li>{item}</li>)}</ul>}</section>)}</div></section>}
+  <section class="related-listings"><div class="container-wide"><span class="eyebrow">Diğer seçenekler</span><h2>Portföyü keşfedin.</h2><div>{related.map((item,index)=><PropertyCard property={item} index={index}/>)}</div></div></section>
+  <ContactCTA project={property.name} title={`${property.name} hakkında bilgi alın.`}/>
+</BaseLayout>
+<style>
+  .listing-hero{padding:clamp(110px,13vw,190px) 0 clamp(80px,10vw,140px)}.listing-hero__grid{display:grid;grid-template-columns:.82fr 1.18fr;gap:7vw;align-items:center}.listing-label{margin-top:85px}.listing-hero h1{max-width:11ch;margin:20px 0 30px;font:400 clamp(52px,7vw,102px)/.93 var(--serif);letter-spacing:-.055em}.listing-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:38px}.listing-tags span{padding:7px 10px;border:1px solid var(--border);font:10px var(--mono);letter-spacing:.08em;text-transform:uppercase}.listing-hero__media{min-height:620px}.listing-hero__media img{width:100%;height:100%;min-height:620px;object-fit:cover}.listing-content{padding:100px 0}.listing-content section{padding:35px 0;border-bottom:1px solid var(--border)}.listing-content h2{font:400 38px var(--serif)}.related-listings{padding:clamp(80px,10vw,140px) 0}.related-listings h2{margin:12px 0 55px;font:400 clamp(44px,5vw,76px)/1 var(--serif)}.related-listings .container-wide>div{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}@media(max-width:800px){.listing-hero__grid{grid-template-columns:1fr}.listing-label{margin-top:50px}.listing-hero__media,.listing-hero__media img{min-height:420px}.related-listings .container-wide>div{grid-template-columns:1fr 1fr}}@media(max-width:580px){.related-listings .container-wide>div{grid-template-columns:1fr}}
+</style>

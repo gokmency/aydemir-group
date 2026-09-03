@@ -1,0 +1,20 @@
+---
+import type { Property } from '../../data/properties';
+interface Props { property: Property; index?: number }
+const { property, index = 0 } = Astro.props;
+---
+<article class="property-card" data-reveal>
+  <a href={`/emlak/${property.slug}/`}>
+    <div class="property-card__media">
+      {property.coverImage ? <img src={property.coverImage} alt={`${property.name} görünümü`} width="1000" height="800" loading={index < 2 ? 'eager' : 'lazy'} /> : <div class="empty-media">{property.name}</div>}
+    </div>
+    <div class="property-card__body">
+      <div class="property-card__tags">{property.roomTypes.map((type) => <span>{type}</span>)}{property.location && <span>{property.location}</span>}</div>
+      <h2>{property.name}</h2>
+      <span class="text-link">İlanı incele <i aria-hidden="true">↗</i></span>
+    </div>
+  </a>
+</article>
+<style>
+  .property-card{background:var(--surface)}.property-card__media{aspect-ratio:1.26;overflow:hidden}.property-card__media img{width:100%;height:100%;object-fit:cover;transition:transform .8s var(--ease)}.property-card:hover img{transform:scale(1.025)}.property-card__body{padding:25px}.property-card__tags{display:flex;flex-wrap:wrap;gap:7px}.property-card__tags span{padding:5px 8px;border:1px solid var(--border);font:10px var(--mono);letter-spacing:.06em;text-transform:uppercase}.property-card h2{margin:20px 0 32px;font:400 clamp(27px,3vw,39px)/1.05 var(--serif);letter-spacing:-.03em}.property-card .text-link{font-size:10px}.property-card i{font-style:normal}
+</style>

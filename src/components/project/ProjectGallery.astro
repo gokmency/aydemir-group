@@ -1,0 +1,51 @@
+---
+interface Props { images: readonly string[]; name: string }
+const { images, name } = Astro.props;
+---
+{images.length > 0 && (
+  <section class="gallery-section" aria-labelledby="gallery-title">
+    <div class="container-wide gallery-head"><div><span class="eyebrow">Proje galerisi</span><h2 id="gallery-title">Mimariyi yakından görün.</h2></div><span>{images.length} fotoğraf</span></div>
+    <div class="container-wide gallery-grid">
+      {images.map((image, index) => (
+        <button type="button" class:list={['gallery-item', index === 0 && 'gallery-item--large']} data-gallery-image={image} data-gallery-index={index} aria-label={`${name} fotoğraf ${index + 1} büyüt`}>
+          <img src={image} alt={`${name} proje fotoğrafı ${index + 1}`} width="1200" height="800" loading="lazy" />
+          <span aria-hidden="true">Büyüt ↗</span>
+        </button>
+      ))}
+    </div>
+    <dialog class="lightbox" aria-label={`${name} fotoğraf galerisi`}>
+      <button class="lightbox-close" type="button" aria-label="Galeriyi kapat">Kapat ×</button>
+      <button class="lightbox-prev" type="button" aria-label="Önceki fotoğraf">←</button>
+      <img alt="" />
+      <button class="lightbox-next" type="button" aria-label="Sonraki fotoğraf">→</button>
+      <span class="lightbox-count" aria-live="polite"></span>
+    </dialog>
+  </section>
+)}
+<script>
+  document.querySelectorAll('.gallery-section').forEach((section) => {
+    const buttons = [...section.querySelectorAll<HTMLElement>('[data-gallery-image]')];
+    const dialog = section.querySelector<HTMLDialogElement>('dialog');
+    const display = dialog?.querySelector<HTMLImageElement>('img');
+    const count = dialog?.querySelector<HTMLElement>('.lightbox-count');
+    let active = 0;
+    const show = (index: number) => {
+      active = (index + buttons.length) % buttons.length;
+      const button = buttons[active];
+      if (display && button) {
+        display.src = button.dataset.galleryImage ?? '';
+        display.alt = button.querySelector('img')?.alt ?? '';
+      }
+      if (count) count.textContent = `${active + 1} / ${buttons.length}`;
+    };
+    buttons.forEach((button, index) => button.addEventListener('click', () => { show(index); dialog?.showModal(); }));
+    dialog?.querySelector('.lightbox-close')?.addEventListener('click', () => dialog.close());
+    dialog?.querySelector('.lightbox-prev')?.addEventListener('click', () => show(active - 1));
+    dialog?.querySelector('.lightbox-next')?.addEventListener('click', () => show(active + 1));
+    dialog?.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
+    dialog?.addEventListener('keydown', (event) => { if (event.key === 'ArrowLeft') show(active - 1); if (event.key === 'ArrowRight') show(active + 1); });
+  });
+</script>
+<style>
+  .gallery-section{padding:clamp(80px,10vw,150px) 0;background:var(--surface)}.gallery-head{margin-bottom:50px;display:flex;justify-content:space-between;align-items:end}.gallery-head h2{margin:12px 0 0;font:400 clamp(42px,5.5vw,80px)/1 var(--serif);letter-spacing:-.045em}.gallery-head>span{color:var(--muted);font:11px var(--mono);letter-spacing:.1em;text-transform:uppercase}.gallery-grid{display:grid;grid-template-columns:1.35fr .65fr;gap:12px}.gallery-item{position:relative;min-height:330px;padding:0;overflow:hidden;border:0;background:var(--surface-muted);cursor:zoom-in}.gallery-item:nth-child(n+2){aspect-ratio:1.25}.gallery-item--large{grid-row:span 2}.gallery-item img{width:100%;height:100%;object-fit:cover;transition:transform .6s var(--ease)}.gallery-item:hover img{transform:scale(1.02)}.gallery-item span{position:absolute;right:14px;bottom:14px;padding:7px 9px;color:#fff;background:rgba(25,24,21,.72);font:10px var(--mono);letter-spacing:.08em}.lightbox{width:100vw;max-width:none;height:100vh;max-height:none;margin:0;padding:60px;color:#fff;background:rgba(20,19,17,.97);border:0}.lightbox::backdrop{background:#141311}.lightbox img{width:100%;height:100%;object-fit:contain}.lightbox button{position:fixed;z-index:2;border:0;color:#fff;background:none;cursor:pointer}.lightbox-close{top:22px;right:24px}.lightbox-prev,.lightbox-next{top:50%;width:48px;height:48px;border:1px solid rgba(255,255,255,.5)!important;border-radius:50%!important}.lightbox-prev{left:18px}.lightbox-next{right:18px}.lightbox-count{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);font:11px var(--mono)}@media(max-width:720px){.gallery-grid{display:flex;overflow-x:auto;scroll-snap-type:x mandatory}.gallery-item,.gallery-item--large{flex:0 0 88%;aspect-ratio:1.2;min-height:0;scroll-snap-align:start}.gallery-head{align-items:start;flex-direction:column;gap:16px}.lightbox{padding:55px 12px}}
+</style>

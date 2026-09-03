@@ -1,0 +1,53 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectGallery from '../../components/project/ProjectGallery.astro';
+import ProjectCard from '../../components/project/ProjectCard.astro';
+import ContactCTA from '../../components/ui/ContactCTA.astro';
+import { projects } from '../../data/projects';
+import type { Project } from '../../data/projects';
+
+export function getStaticPaths() {
+  return projects.map((project) => ({ params: { slug: project.slug }, props: { project } }));
+}
+interface Props { project: Project }
+const { project } = Astro.props as Props;
+const facts = [
+  project.status && ['Durum', `${project.status} Proje`],
+  project.location && ['Lokasyon', project.location],
+  project.apartmentTypes.length && ['Daire Tipi', project.apartmentTypes.join(', ')]
+].filter(Boolean) as [string,string][];
+const allImages = [project.coverImage, ...project.gallery].filter(Boolean) as string[];
+const related = projects.filter((item) => item.slug !== project.slug && (item.status === project.status || (project.location && item.location === project.location))).slice(0,3);
+const description = project.shortDescription ?? `${project.name}, Durmuş Aydemir Group proje portföyünde yer alan ${project.status.toLocaleLowerCase('tr-TR')} projedir.`;
+const schema = {
+  '@context':'https://schema.org','@type':'WebPage',name:project.name,description,
+  breadcrumb:{'@type':'BreadcrumbList',itemListElement:[
+    {'@type':'ListItem',position:1,name:'Ana Sayfa',item:new URL('/',Astro.site).toString()},
+    {'@type':'ListItem',position:2,name:'Projeler',item:new URL('/projeler/',Astro.site).toString()},
+    {'@type':'ListItem',position:3,name:project.name}
+  ]}
+};
+---
+<BaseLayout transparentHeader title={`${project.name} | Durmuş Aydemir Group`} description={description} image={project.coverImage ?? '/images/projects/aydemir-cadde/cover.avif'} canonical={`/projeler/${project.slug}/`} schema={schema}>
+  <header class="project-hero">
+    {project.coverImage ? <img src={project.coverImage} alt={`${project.name} proje görünümü`} width="1920" height="1080" fetchpriority="high" /> : <div class="empty-media">{project.name}</div>}
+    <div class="project-hero__scrim"></div>
+    <div class="container-wide project-hero__content">
+      <nav class="breadcrumbs" aria-label="Sayfa yolu"><a href="/">Ana Sayfa</a><span>/</span><a href="/projeler/">Projeler</a><span>/</span><span>{project.name}</span></nav>
+      <div class="project-hero__title"><div><span class="eyebrow">{project.status} proje</span><h1>{project.name}</h1></div><a class="button button--light" href={`https://wa.me/905404175353?text=${encodeURIComponent(project.name + ' hakkında bilgi almak istiyorum.')}`} target="_blank" rel="noopener noreferrer">Bilgi al <span aria-hidden="true">↗</span></a></div>
+    </div>
+  </header>
+  <section class="project-overview">
+    <div class="container project-overview__grid">
+      <div data-reveal><span class="eyebrow">Proje özeti</span><h2>{project.shortDescription ? 'Yaşam için tasarlandı.' : project.name}</h2></div>
+      <div data-reveal>{project.shortDescription && <p>{project.shortDescription}</p>}{facts.length > 0 && <dl>{facts.map(([label,value]) => <div><dt>{label}</dt><dd>{value}</dd></div>)}</dl>}</div>
+    </div>
+  </section>
+  <ProjectGallery images={allImages} name={project.name} />
+  {project.sections.length > 0 && <section class="project-content"><div class="container project-content__grid"><div><span class="eyebrow">Proje ayrıntıları</span><h2>Her ayrıntı, yaşamı tamamlar.</h2></div><div class="project-sections">{project.sections.map((section) => <section>{section.title && <h3>{section.title}</h3>}{section.body && <p>{section.body}</p>}{section.items && <ul>{section.items.map((item) => <li>{item}</li>)}</ul>}</section>)}</div></div></section>}
+  {related.length > 0 && <section class="related"><div class="container-wide related__head"><span class="eyebrow">Diğer projeler</span><h2>Projeleri inceleyin.</h2></div><div class="container-wide related__grid">{related.map((item,index) => <ProjectCard project={item} index={index} compact />)}</div></section>}
+  <ContactCTA project={project.name} title={`${project.name} hakkında bilgi alın.`} />
+</BaseLayout>
+<style>
+  .project-hero{position:relative;min-height:90svh;display:flex;align-items:end;overflow:hidden;color:#fff;background:var(--dark)}.project-hero>img,.project-hero>.empty-media{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.project-hero__scrim{position:absolute;inset:0;background:linear-gradient(0deg,rgba(20,19,16,.8),transparent 65%),linear-gradient(90deg,rgba(20,19,16,.42),transparent 60%)}.project-hero__content{position:relative;z-index:2;padding-bottom:clamp(50px,7vw,100px)}.project-hero .breadcrumbs{margin-bottom:60px;color:#e2ddd3}.project-hero__title{display:flex;align-items:end;justify-content:space-between;gap:40px}.project-hero h1{max-width:12ch;margin:18px 0 0;font:400 clamp(62px,9vw,138px)/.84 var(--serif);letter-spacing:-.06em}.project-overview,.project-content{padding:clamp(90px,11vw,160px) 0}.project-overview__grid,.project-content__grid{display:grid;grid-template-columns:.75fr 1.25fr;gap:10vw}.project-overview h2,.project-content h2{max-width:10ch;margin:18px 0 0;font:400 clamp(43px,5vw,72px)/1 var(--serif);letter-spacing:-.04em}.project-overview p{margin:0 0 50px;font:400 clamp(23px,2.8vw,36px)/1.35 var(--serif)}.project-overview dl{margin:0;border-top:1px solid var(--border)}.project-overview dl div{padding:19px 0;display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border)}.project-overview dt{color:var(--muted);font-size:12px}.project-overview dd{margin:0}.project-content{background:var(--background)}.project-sections>section{padding:0 0 40px;margin-bottom:40px;border-bottom:1px solid var(--border)}.project-sections h3{margin:0 0 18px;font:400 31px/1.1 var(--serif)}.project-sections p{color:var(--muted);font-size:17px}.project-sections ul{display:grid;grid-template-columns:1fr 1fr;gap:0 30px;margin:0;padding:0;list-style:none}.project-sections li{padding:11px 0;border-bottom:1px solid var(--border)}.project-sections li::before{content:"↗";margin-right:10px;color:var(--accent)}.related{padding:clamp(90px,11vw,150px) 0;background:var(--surface)}.related__head{margin-bottom:55px}.related__head h2{margin:12px 0 0;font:400 clamp(42px,5vw,72px)/1 var(--serif)}.related__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}@media(max-width:800px){.project-hero{min-height:78svh}.project-hero__title{align-items:start;flex-direction:column}.project-overview__grid,.project-content__grid{grid-template-columns:1fr}.related__grid{grid-template-columns:1fr 1fr}}@media(max-width:580px){.project-sections ul,.related__grid{grid-template-columns:1fr}.project-hero .breadcrumbs{margin-bottom:32px;flex-wrap:wrap}}
+</style>

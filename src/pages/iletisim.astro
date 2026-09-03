@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
+---
+<BaseLayout title="İletişim | Durmuş Aydemir Group" description="Durmuş Aydemir Group ile projeler, satış süreçleri ve iş birlikleri hakkında iletişime geçin.">
+  <header class="contact-hero"><div class="container-wide"><nav class="breadcrumbs" aria-label="Sayfa yolu"><a href="/">Ana Sayfa</a><span>/</span><span>İletişim</span></nav><span class="eyebrow">Bize ulaşın</span><h1>Yeni bir başlangıcı konuşalım.</h1></div></header>
+  <section class="contact-main"><div class="container-wide contact-main__grid"><div class="contact-info" data-reveal><span class="eyebrow">İletişim bilgileri</span><div><strong>Telefon</strong><a href={`tel:${site.phoneHref}`}>{site.phoneDisplay}</a></div><div><strong>Adres</strong><address>{site.address}</address></div><p>Kaynak arşivde e-posta adresi korumalı biçimde bulunduğu için doğrulanmış açık adres yayımlanmamıştır.</p></div><form class="contact-form" data-whatsapp-form data-reveal><div><label for="name">Ad Soyad</label><input id="name" name="name" autocomplete="name" required /></div><div><label for="phone">Telefon</label><input id="phone" name="phone" type="tel" autocomplete="tel" required /></div><div><label for="email">E-posta</label><input id="email" name="email" type="email" autocomplete="email" /></div><div><label for="subject">Konu</label><select id="subject" name="subject"><option>Projeler hakkında bilgi</option><option>Satış seçenekleri</option><option>İş birliği</option><option>Diğer</option></select></div><div class="full"><label for="message">Mesaj</label><textarea id="message" name="message" rows="5" required></textarea></div><div class="full form-actions"><p>Bu form verilerinizi depolamaz. “WhatsApp’ta gönder” düğmesi, mesajınızı telefonunuzdaki veya tarayıcınızdaki WhatsApp’a aktarır.</p><button class="button" type="submit">WhatsApp’ta gönder ↗</button></div></form></div></section>
+</BaseLayout>
+<script>
+  document.querySelector('[data-whatsapp-form]')?.addEventListener('submit',(event)=>{
+    event.preventDefault();
+    const form=event.currentTarget;
+    if(!(form instanceof HTMLFormElement)||!form.reportValidity())return;
+    const data=new FormData(form);
+    const text=[`Ad Soyad: ${data.get('name')}`,`Telefon: ${data.get('phone')}`,data.get('email')?`E-posta: ${data.get('email')}`:'',`Konu: ${data.get('subject')}`,`Mesaj: ${data.get('message')}`].filter(Boolean).join('\n');
+    window.open(`https://wa.me/905404175353?text=${encodeURIComponent(text)}`,'_blank','noopener,noreferrer');
+  });
+</script>
+<style>
+  .contact-hero{padding:clamp(130px,17vw,250px) 0 clamp(80px,10vw,150px);color:#eee9de;background:var(--dark)}.contact-hero .breadcrumbs{margin-bottom:90px;color:#aaa399}.contact-hero h1{max-width:11ch;margin:22px 0 0;font:400 clamp(58px,8vw,120px)/.91 var(--serif);letter-spacing:-.06em}.contact-main{padding:clamp(90px,11vw,160px) 0}.contact-main__grid{display:grid;grid-template-columns:.72fr 1.28fr;gap:10vw}.contact-info>div{padding:30px 0;border-bottom:1px solid var(--border)}.contact-info strong{display:block;margin-bottom:9px;color:var(--muted);font:10px var(--mono);letter-spacing:.1em;text-transform:uppercase}.contact-info a{font:400 34px var(--serif)}.contact-info address{max-width:28ch;font-style:normal}.contact-info p{margin-top:28px;color:var(--muted);font-size:12px}.contact-form{display:grid;grid-template-columns:1fr 1fr;gap:28px 20px}.contact-form .full{grid-column:1/-1}.contact-form label{display:block;margin-bottom:8px;font-size:12px}.contact-form input,.contact-form select,.contact-form textarea{width:100%;padding:14px 0;border:0;border-bottom:1px solid var(--border);border-radius:0;background:transparent;outline:none}.contact-form input:focus,.contact-form select:focus,.contact-form textarea:focus{border-color:var(--accent)}.form-actions{display:flex;align-items:center;justify-content:space-between;gap:30px}.form-actions p{max-width:50ch;margin:0;color:var(--muted);font-size:11px}@media(max-width:850px){.contact-main__grid{grid-template-columns:1fr}.contact-form{margin-top:30px}}@media(max-width:560px){.contact-form{grid-template-columns:1fr}.contact-form .full{grid-column:auto}.form-actions{align-items:stretch;flex-direction:column}}
+</style>

@@ -1,0 +1,32 @@
+---
+import { site } from '../../data/site';
+---
+<footer class="site-footer">
+  <div class="container-wide footer-lead">
+    <p class="eyebrow">Antalya’da 1985’ten beri</p>
+    <a href="/iletisim/" class="footer-statement">Projeler hakkında bilgi alın. <span aria-hidden="true">↗</span></a>
+  </div>
+  <div class="container-wide footer-grid">
+    <div class="footer-brand">
+      <img src="/images/brand/logo.png" width="359" height="105" alt={site.name} />
+      <p>Antalya’da konut ve iş yeri projeleri.</p>
+    </div>
+    <div>
+      <strong>Keşfedin</strong>
+      <a href="/projeler/">Projeler</a><a href="/emlak/">Emlak</a><a href="/hizmetler/">Hizmetler</a>
+    </div>
+    <div>
+      <strong>Kurumsal</strong>
+      <a href="/hakkimizda/">Hakkımızda</a><a href="/iletisim/">İletişim</a><a href="/insan-kaynaklari/">İnsan Kaynakları</a>
+    </div>
+    <div>
+      <strong>İletişim</strong>
+      <a href={`tel:${site.phoneHref}`}>{site.phoneDisplay}</a>
+      <address>{site.address}</address>
+    </div>
+  </div>
+  <div class="container-wide footer-bottom">
+    <span>© {new Date().getFullYear()} {site.name}</span>
+    <span>Tüm hakları saklıdır.</span>
+  </div>
+</footer>

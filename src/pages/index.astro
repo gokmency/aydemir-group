@@ -1,0 +1,195 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectCard from '../components/project/ProjectCard.astro';
+import PropertyCard from '../components/property/PropertyCard.astro';
+import { projects } from '../data/projects';
+import { properties } from '../data/properties';
+import { services } from '../data/services';
+import { site, testimonials } from '../data/site';
+
+const featuredSlugs = ['aydemir-cadde','aydemir-doga-sitesi','safir-konutlari','technic-aydemir','aydemir-plaza','aydemir-suit'];
+const featured = featuredSlugs.map((slug) => projects.find((project) => project.slug === slug)).filter(Boolean);
+const currentProjects = projects.filter((project) => project.status === 'Devam Eden');
+const heroImages = [
+  { src: '/images/projects/aydemir-doga-sitesi/gallery-01.avif', caption: 'Aydemir Doğa Sitesi · Aktoprak', position: 'center 54%' },
+  { src: '/images/projects/aydemir-cadde/cover.avif', caption: 'Aydemir Cadde · Antalya', position: 'center 55%' },
+  { src: '/images/projects/aydemir-konutlari/cover.avif', caption: 'Aydemir Konutları · Antalya', position: 'center 52%' },
+  { src: '/images/projects/aydemir-suit/cover.avif', caption: 'Aydemir Suit · Antalya', position: 'center 54%' },
+  { src: '/images/projects/technic-aydemir/cover.avif', caption: 'Technic Aydemir · Antalya', position: 'center 52%' },
+  { src: '/images/projects/zumrut-konutlari/cover.avif', caption: 'Zümrüt Konutları · Aktoprak', position: 'center 52%' }
+];
+const initialHero = heroImages[0]!;
+---
+<BaseLayout transparentHeader title="Durmuş Aydemir Group | Antalya Konut ve İnşaat Projeleri" description="Durmuş Aydemir Group’un Antalya’daki konut ve iş yeri projelerini inceleyin.">
+  <section class="home-hero" data-hero data-images={JSON.stringify(heroImages)}>
+    <img class="home-hero__image is-active" data-hero-image src={initialHero.src} alt="" aria-hidden="true" width="1440" height="1152" fetchpriority="high" style={`object-position:${initialHero.position}`} />
+    <img class="home-hero__image" data-hero-image alt="" aria-hidden="true" width="1600" height="1080" />
+    <div class="home-hero__scrim"></div>
+    <div class="container-wide home-hero__content">
+      <span class="eyebrow">Antalya · 1985’ten beri</span>
+      <h1>Konut ve iş yeri<br /><em>projeleri.</em></h1>
+      <div class="home-hero__bottom">
+        <p>Antalya’da proje geliştiriyor, satış sürecini doğrudan kendi ekibimizle yürütüyoruz.</p>
+        <div><a class="button button--light" href="/projeler/">Projeleri gör <span aria-hidden="true">↗</span></a><a class="text-link" href="/emlak/">Satılık daireler</a></div>
+      </div>
+    </div>
+    <div class="home-hero__meta" aria-label="Hero görseli kontrolleri">
+      <span class="home-hero__caption" data-hero-caption>{initialHero.caption}</span>
+      <div class="home-hero__controls">
+        <span class="home-hero__count"><span data-hero-index>01</span><span aria-hidden="true"> / </span>{String(heroImages.length).padStart(2, '0')}</span>
+        <div class="home-hero__dots" role="group" aria-label="Hero görselini seçin">
+          {heroImages.map((image, index) => <button class:list={['home-hero__dot', index === 0 && 'is-active']} data-hero-select={index} type="button" aria-label={`${image.caption} görselini göster`} aria-current={index === 0 ? 'true' : undefined}></button>)}
+        </div>
+        <button class="home-hero__toggle" data-hero-toggle type="button" aria-pressed="false" aria-label="Görsel döngüsünü durdur">
+          <span aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-intro">
+    <div class="container-wide home-intro__grid">
+      <div data-reveal><span class="eyebrow">Şirket</span><h2 class="section-title">1985’ten beri Antalya’da.</h2></div>
+      <div data-reveal>
+        <p class="home-intro__lead">İnşaat, emlak, otomotiv ve hayvancılık alanlarında faaliyet gösteriyoruz.</p>
+        <p class="section-copy">İnşaat yatırımlarımıza 2008’de başladık. Konut ve iş yeri projelerinde tasarım, uygulama ve satış süreçlerini kendi ekibimizle takip ediyoruz.</p>
+        <a class="text-link" href="/hakkimizda/">Hakkımızda <span aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+    <div class="container-wide facts" data-reveal>
+      <div><strong>{site.founded}</strong><span>Ticari faaliyete başlangıç</span></div>
+      <div><strong>{site.constructionSince}</strong><span>İnşaat yatırımlarına başlangıç</span></div>
+      <div><strong>{site.projectCount}</strong><span>İnşaat projesi</span></div>
+      <div><strong>Antalya</strong><span>Merkez ofis</span></div>
+    </div>
+  </section>
+
+  <section class="featured-projects">
+    <div class="container-wide section-head" data-reveal>
+      <div><span class="eyebrow">Projeler</span><h2 class="section-title">Tamamlanan projeler.</h2></div>
+      <a class="text-link" href="/projeler/">Tüm projeler <span aria-hidden="true">↗</span></a>
+    </div>
+    <div class="container-wide editorial-grid">
+      {featured.map((project, index) => project && <ProjectCard project={project} index={index} compact={index > 1} />)}
+    </div>
+  </section>
+
+  <section class="philosophy">
+    <div class="container-wide philosophy__grid">
+      <div data-reveal><span class="eyebrow">Çalışma biçimimiz</span><h2>Projeyi baştan sona takip ediyoruz.</h2></div>
+      <div class="philosophy__copy" data-reveal><p>Planlama, uygulama ve satış sonrası iletişim aynı ekip sorumluluğunda ilerler.</p><ol><li><span>01</span> Yapı güvenliği</li><li><span>02</span> Malzeme seçimi</li><li><span>03</span> Daire planı</li><li><span>04</span> Satış sonrası iletişim</li></ol></div>
+    </div>
+  </section>
+
+  {currentProjects.length > 0 && <section class="current-band">
+    <div class="container-wide current-band__head" data-reveal><span class="eyebrow">Devam eden projeler</span><h2>Yapımı süren projeler.</h2></div>
+    <div class="container-wide current-band__grid">{currentProjects.map((project, index) => <ProjectCard project={project} index={index} />)}</div>
+  </section>}
+
+  <section class="services-home">
+    <div class="container-wide section-head" data-reveal><div><span class="eyebrow">Faaliyet alanları</span><h2 class="section-title">Grup şirketlerimiz.</h2></div><a class="text-link" href="/hizmetler/">Tüm hizmetler ↗</a></div>
+    <div class="container-wide service-list">
+      {services.map((service, index) => <a href={`/hizmetler/${service.slug}/`} data-reveal><span>{String(index + 1).padStart(2,'0')}</span><h3>{service.name}</h3><p>{service.slug === 'insaat' ? 'Konut ve iş yeri projeleri' : service.description ?? 'Grup faaliyet alanı'}</p><i aria-hidden="true">↗</i></a>)}
+    </div>
+  </section>
+
+  <section class="properties-home">
+    <div class="container-wide section-head" data-reveal><div><span class="eyebrow">Satılık daireler</span><h2 class="section-title">Güncel ilanlar.</h2></div><a class="text-link" href="/emlak/">Tüm ilanlar ↗</a></div>
+    <div class="container-wide property-grid">{properties.slice(0,3).map((property,index) => <PropertyCard property={property} index={index} />)}</div>
+  </section>
+
+  <section class="testimonials" id="musteri-gorusleri">
+    <div class="container-wide testimonials__head" data-reveal><span class="eyebrow">Müşteri görüşleri</span><h2 class="section-title">Müşterilerimizden.</h2></div>
+    <div class="container-wide testimonial-grid">{testimonials.map((item,index) => <figure data-reveal><span>{String(index+1).padStart(2,'0')}</span><blockquote>“{item.quote}”</blockquote><figcaption>{item.name}</figcaption></figure>)}</div>
+  </section>
+</BaseLayout>
+
+<script>
+  const hero = document.querySelector<HTMLElement>('[data-hero]');
+  if (hero) {
+    const images = JSON.parse(hero.dataset.images ?? '[]') as Array<{ src: string; caption: string; position: string }>;
+    const layers = [...hero.querySelectorAll<HTMLImageElement>('[data-hero-image]')];
+    const caption = hero.querySelector<HTMLElement>('[data-hero-caption]');
+    const currentIndex = hero.querySelector<HTMLElement>('[data-hero-index]');
+    const selectors = [...hero.querySelectorAll<HTMLButtonElement>('[data-hero-select]')];
+    const toggle = hero.querySelector<HTMLButtonElement>('[data-hero-toggle]');
+    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+    let index = 0;
+    let activeLayer = 0;
+    let timer: ReturnType<typeof setInterval> | undefined;
+    let userPaused = false;
+
+    const preload = (nextIndex: number) => {
+      if (!images[nextIndex]) return;
+      const image = new Image();
+      image.src = images[nextIndex].src;
+    };
+
+    const updateControls = () => {
+      currentIndex && (currentIndex.textContent = String(index + 1).padStart(2, '0'));
+      const current = images[index];
+      if (!current) return;
+      caption && (caption.textContent = current.caption);
+      selectors.forEach((button, buttonIndex) => {
+        const selected = buttonIndex === index;
+        button.classList.toggle('is-active', selected);
+        if (selected) button.setAttribute('aria-current', 'true');
+        else button.removeAttribute('aria-current');
+      });
+      preload((index + 1) % images.length);
+    };
+
+    const show = (nextIndex: number) => {
+      if (nextIndex === index || !images[nextIndex] || layers.length < 2) return;
+      const nextLayer = activeLayer === 0 ? 1 : 0;
+      const nextImage = layers[nextLayer];
+      const next = images[nextIndex];
+      if (!nextImage || !next) return;
+      let settled = false;
+      const apply = () => {
+        if (settled) return;
+        settled = true;
+        nextImage.classList.add('is-active');
+        layers[activeLayer]?.classList.remove('is-active');
+        activeLayer = nextLayer;
+        index = nextIndex;
+        updateControls();
+      };
+      nextImage.onload = apply;
+      nextImage.style.objectPosition = next.position;
+      nextImage.src = next.src;
+      if (nextImage.complete) apply();
+    };
+
+    const stopTimer = () => {
+      if (timer) clearInterval(timer);
+      timer = undefined;
+    };
+
+    const updateTimer = () => {
+      stopTimer();
+      if (userPaused || reducedMotion.matches || document.hidden || images.length < 2) return;
+      timer = setInterval(() => show((index + 1) % images.length), 6500);
+    };
+
+    selectors.forEach((button) => button.addEventListener('click', () => {
+      show(Number(button.dataset.heroSelect));
+      updateTimer();
+    }));
+    toggle?.addEventListener('click', () => {
+      userPaused = !userPaused;
+      toggle.classList.toggle('is-paused', userPaused);
+      toggle.setAttribute('aria-label', userPaused ? 'Görsel döngüsünü başlat' : 'Görsel döngüsünü durdur');
+      toggle.setAttribute('aria-pressed', String(userPaused));
+      updateTimer();
+    });
+    document.addEventListener('visibilitychange', updateTimer);
+    reducedMotion.addEventListener('change', updateTimer);
+    updateControls();
+    updateTimer();
+  }
+</script>
+
+<style>
+  .home-hero{position:relative;min-height:clamp(660px,94svh,980px);display:flex;align-items:end;overflow:hidden;color:#fff;background:#2b2924}.home-hero__image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.025);transition:opacity 1.2s var(--ease),transform 7s linear}.home-hero__image.is-active{opacity:1;transform:scale(1)}.home-hero__scrim{position:absolute;z-index:1;inset:0;background:linear-gradient(90deg,rgba(17,20,18,.79) 0%,rgba(17,20,18,.42) 46%,rgba(17,20,18,.12) 78%),linear-gradient(0deg,rgba(17,20,18,.72),transparent 56%)}.home-hero__content{position:relative;z-index:2;padding-bottom:clamp(55px,7vw,100px)}.home-hero h1{max-width:12ch;margin:22px 0 70px;font:400 clamp(60px,9.3vw,145px)/.82 var(--serif);letter-spacing:-.065em}.home-hero h1 em{font-weight:400;color:#d6c4aa}.home-hero__bottom{display:grid;grid-template-columns:.8fr 1.2fr;gap:9vw;align-items:end}.home-hero__bottom p{max-width:36ch;margin:0;font-size:17px}.home-hero__bottom>div{display:flex;align-items:center;gap:26px}.home-hero__meta{position:absolute;z-index:2;right:var(--gutter);bottom:24px;display:flex;flex-direction:column;align-items:end;gap:14px}.home-hero__caption,.home-hero__count{font:10px var(--mono);letter-spacing:.1em;text-transform:uppercase}.home-hero__controls{display:flex;align-items:center;gap:14px}.home-hero__dots{display:flex;align-items:center;gap:7px}.home-hero__dot{width:18px;height:18px;padding:0;border:0;background:transparent;cursor:pointer}.home-hero__dot::after{content:"";display:block;width:100%;height:1px;background:rgba(255,255,255,.48);transition:transform .3s var(--ease),background .3s}.home-hero__dot:hover::after,.home-hero__dot.is-active::after{background:#fff;transform:scaleY(2)}.home-hero__toggle{width:28px;height:28px;padding:0;border:0;border-left:1px solid rgba(255,255,255,.4);color:#fff;background:none;cursor:pointer}.home-hero__toggle span{display:block;width:8px;height:10px;margin-left:12px;background:linear-gradient(90deg,currentColor 0 2px,transparent 2px 5px,currentColor 5px)}.home-hero__toggle.is-paused span{width:10px;height:12px;margin-left:11px;background:currentColor;clip-path:polygon(0 0,100% 50%,0 100%)}.home-intro{padding:clamp(100px,12vw,180px) 0}.home-intro__grid{display:grid;grid-template-columns:1fr 1fr;gap:10vw}.home-intro__lead{max-width:24ch;margin:0 0 28px;font:400 clamp(26px,3vw,39px)/1.2 var(--serif)}.home-intro .text-link{margin-top:24px}.facts{margin-top:clamp(75px,9vw,130px);display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--border)}.facts>div{padding:32px 22px 0 0}.facts strong{display:block;font:400 clamp(35px,4vw,58px)/1 var(--serif)}.facts span{display:block;max-width:19ch;margin-top:10px;color:var(--muted);font-size:12px}.featured-projects,.services-home,.properties-home,.testimonials{padding:clamp(90px,11vw,160px) 0}.featured-projects{background:var(--surface)}.section-head{margin-bottom:clamp(50px,7vw,92px);display:flex;align-items:end;justify-content:space-between;gap:40px}.section-head h2{max-width:13ch}.editorial-grid{display:grid;grid-template-columns:1.22fr .78fr;gap:clamp(28px,5vw,70px) 24px}.editorial-grid article:nth-child(3),.editorial-grid article:nth-child(6){margin-top:80px}.philosophy{padding:clamp(100px,13vw,190px) 0;color:#eee9de;background:var(--dark)}.philosophy__grid{display:grid;grid-template-columns:1.35fr .65fr;gap:10vw}.philosophy h2{max-width:13ch;margin:20px 0 0;font:400 clamp(48px,6.8vw,98px)/.98 var(--serif);letter-spacing:-.05em}.philosophy__copy p{margin:0 0 60px;color:#bdb6ab;font-size:18px}.philosophy ol{margin:0;padding:0;list-style:none}.philosophy li{padding:18px 0;border-bottom:1px solid rgba(255,255,255,.18);font-family:var(--serif);font-size:24px}.philosophy li span{display:inline-block;width:50px;color:#9f978c;font:10px var(--mono)}.current-band{padding:clamp(90px,11vw,160px) 0}.current-band__head{margin-bottom:60px;display:grid;grid-template-columns:.5fr 1.5fr;align-items:end}.current-band__head h2{max-width:13ch;margin:0;font:400 clamp(48px,6vw,90px)/1 var(--serif);letter-spacing:-.045em}.current-band__grid{display:grid;grid-template-columns:1fr 1fr;gap:26px}.services-home{background:#dcd4c7}.service-list{border-top:1px solid #ada393}.service-list a{padding:26px 0;display:grid;grid-template-columns:70px 1fr 1fr auto;align-items:baseline;gap:20px;border-bottom:1px solid #ada393}.service-list span{font:10px var(--mono)}.service-list h3{margin:0;font:400 clamp(34px,4vw,58px)/1 var(--serif)}.service-list p{margin:0;color:#655f56}.service-list i{font-style:normal;font-size:22px}.property-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.testimonials{background:var(--surface)}.testimonials__head{max-width:800px}.testimonial-grid{margin-top:70px;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border)}.testimonial-grid figure{margin:0;padding:40px;background:var(--surface)}.testimonial-grid figure>span{font:10px var(--mono)}.testimonial-grid blockquote{min-height:230px;margin:55px 0 36px;font:400 clamp(21px,2vw,28px)/1.45 var(--serif)}.testimonial-grid figcaption{font-size:12px;letter-spacing:.08em;text-transform:uppercase}@media(max-width:900px){.home-hero__bottom,.home-intro__grid,.philosophy__grid{grid-template-columns:1fr}.home-hero__bottom{gap:28px}.home-hero__bottom>div{flex-wrap:wrap}.facts{grid-template-columns:1fr 1fr}.editorial-grid{grid-template-columns:1fr}.editorial-grid article:nth-child(3),.editorial-grid article:nth-child(6){margin-top:0}.current-band__head{grid-template-columns:1fr;gap:20px}.property-grid,.testimonial-grid{grid-template-columns:1fr 1fr}.service-list a{grid-template-columns:45px 1fr auto}.service-list p{display:none}}@media(max-width:640px){.home-hero{min-height:790px}.home-hero h1{margin-bottom:44px}.home-hero__meta{right:20px;bottom:22px}.home-hero__caption,.home-hero__dots{display:none}.home-hero__count{font-size:9px}.facts,.current-band__grid,.property-grid,.testimonial-grid{grid-template-columns:1fr}.section-head{align-items:start;flex-direction:column}.testimonial-grid blockquote{min-height:0}.service-list a{grid-template-columns:35px 1fr auto}}@media(prefers-reduced-motion:reduce){.home-hero__image{transition:none}.home-hero__image:not(:first-of-type){display:none}.home-hero__toggle,.home-hero__dots{display:none}}
+</style>

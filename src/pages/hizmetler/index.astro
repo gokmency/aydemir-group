@@ -1,0 +1,13 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ContactCTA from '../../components/ui/ContactCTA.astro';
+import { services } from '../../data/services';
+---
+<BaseLayout title="Hizmetler | Durmuş Aydemir Group" description="Durmuş Aydemir Group’un inşaat, emlak, otomotiv ve hayvancılık faaliyet alanları.">
+  <header class="page-hero"><div class="container-wide"><nav class="breadcrumbs" aria-label="Sayfa yolu"><a href="/">Ana Sayfa</a><span>/</span><span>Hizmetler</span></nav><span class="eyebrow hero-label">Faaliyet alanları</span><h1 class="display">Hizmetler</h1><p>İnşaat, emlak, otomotiv ve hayvancılık alanlarında faaliyet gösteriyoruz.</p></div></header>
+  <section class="services-grid">{services.map((service,index)=><article data-reveal><a href={`/hizmetler/${service.slug}/`}><div class="service-media">{service.image?<img src={service.image} alt={`${service.name} hizmet alanı`} width="1200" height="900" loading={index>0?'lazy':'eager'}/>:<div class="empty-media">{service.name}</div>}<span>{String(index+1).padStart(2,'0')}</span></div><div class="service-copy"><div><span class="eyebrow">Faaliyet alanı</span><h2>{service.name}</h2></div><p>{service.description??'Durmuş Aydemir Group faaliyet alanı.'}</p><i aria-hidden="true">↗</i></div></a></article>)}</section>
+  <ContactCTA />
+</BaseLayout>
+<style>
+  .page-hero p{max-width:58ch;margin:28px 0 0;color:var(--muted);font-size:18px}.hero-label{margin-top:80px}.services-grid article{border-bottom:1px solid var(--border)}.services-grid a{display:grid;grid-template-columns:1fr 1fr}.service-media{position:relative;min-height:600px;overflow:hidden}.service-media img{width:100%;height:100%;object-fit:cover;transition:transform .8s var(--ease)}article:hover img{transform:scale(1.025)}.service-media>span{position:absolute;top:24px;left:24px;padding:8px 10px;color:#fff;background:rgba(25,24,21,.72);font:10px var(--mono)}.service-copy{padding:clamp(40px,7vw,100px);display:grid;grid-template-columns:1fr;align-content:space-between}.service-copy h2{margin:12px 0 0;font:400 clamp(55px,7vw,110px)/.9 var(--serif);letter-spacing:-.055em}.service-copy p{max-width:40ch;color:var(--muted);font-size:17px}.service-copy i{font-style:normal;font-size:25px}@media(max-width:800px){.services-grid a{grid-template-columns:1fr}.service-media{min-height:420px}.service-copy{min-height:430px}}
+</style>

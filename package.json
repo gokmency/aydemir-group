@@ -1,0 +1,22 @@
+{
+  "name": "durmus-aydemir-group-site",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "latest",
+    "@astrojs/vercel": "^11.0.9",
+    "astro": "latest",
+    "sharp": "latest"
+  },
+  "devDependencies": {
+    "@astrojs/check": "latest",
+    "typescript": "latest"
+  }
+}

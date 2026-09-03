@@ -1,0 +1,58 @@
+---
+import { site } from '../../data/site';
+interface Props { transparent?: boolean }
+const { transparent = false } = Astro.props;
+const nav = [
+  { href: '/projeler/', label: 'Projeler' },
+  { href: '/emlak/', label: 'Emlak' },
+  { href: '/hizmetler/', label: 'Hizmetler' },
+  { href: '/hakkimizda/', label: 'Kurumsal' },
+  { href: '/iletisim/', label: 'İletişim' }
+];
+---
+<header class:list={['site-header', transparent && 'site-header--transparent']} data-header>
+  <div class="header-inner container-wide">
+    <a class="brand" href="/" aria-label={`${site.name} ana sayfa`}>
+      <img src="/images/brand/logo.png" width="359" height="105" alt={site.name} />
+    </a>
+    <nav class="desktop-nav" aria-label="Ana menü">
+      {nav.map((item) => <a href={item.href}>{item.label}</a>)}
+    </nav>
+    <a class="header-cta" href="/projeler/">Projeleri gör <span aria-hidden="true">↗</span></a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu">
+      <span>Menü</span><i aria-hidden="true"></i>
+    </button>
+  </div>
+  <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+    <div class="mobile-menu__top container-wide">
+      <span class="eyebrow">Durmuş Aydemir Group</span>
+      <button class="menu-close" type="button" aria-label="Menüyü kapat">Kapat <span aria-hidden="true">×</span></button>
+    </div>
+    <nav aria-label="Mobil menü">
+      <a href="/">Ana Sayfa</a>
+      {nav.map((item) => <a href={item.href}>{item.label}</a>)}
+    </nav>
+    <div class="mobile-menu__footer container-wide">
+      <a href={`tel:${site.phoneHref}`}>{site.phoneDisplay}</a>
+      <span>Kepez, Antalya</span>
+    </div>
+  </div>
+</header>
+<script>
+  const header = document.querySelector('[data-header]');
+  const toggle = document.querySelector('.menu-toggle');
+  const close = document.querySelector('.menu-close');
+  const panel = document.querySelector('#mobile-menu');
+  const setOpen = (open: boolean) => {
+    toggle?.setAttribute('aria-expanded', String(open));
+    panel?.setAttribute('aria-hidden', String(!open));
+    document.body.classList.toggle('menu-open', open);
+  };
+  toggle?.addEventListener('click', () => setOpen(true));
+  close?.addEventListener('click', () => setOpen(false));
+  panel?.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => setOpen(false)));
+  document.addEventListener('keydown', (event) => { if (event.key === 'Escape') setOpen(false); });
+  const updateHeader = () => header?.classList.toggle('is-scrolled', window.scrollY > 24);
+  updateHeader();
+  addEventListener('scroll', updateHeader, { passive: true });
+</script>

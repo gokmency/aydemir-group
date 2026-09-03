@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PropertyCard from '../../components/property/PropertyCard.astro';
+import ContactCTA from '../../components/ui/ContactCTA.astro';
+import { properties } from '../../data/properties';
+const roomTypes = [...new Set(properties.flatMap((property) => property.roomTypes))];
+---
+<BaseLayout title="Antalya Satılık Daireler | Durmuş Aydemir Group" description="Durmuş Aydemir Group projelerindeki satılık daire ve iş merkezi ilanlarını inceleyin.">
+  <header class="page-hero"><div class="container-wide"><nav class="breadcrumbs" aria-label="Sayfa yolu"><a href="/">Ana Sayfa</a><span>/</span><span>Emlak</span></nav><span class="eyebrow hero-label">Yaşam seçenekleri</span><h1 class="display">Emlak</h1><p>Durmuş Aydemir Group projelerinde kaynak arşivde yer alan daire ve iş merkezi seçenekleri.</p></div></header>
+  <section class="property-listing">
+    {roomTypes.length > 0 && <div class="container-wide property-filters" role="group" aria-label="Daire tipine göre filtrele"><button class="is-active" data-room="Tümü">Tümü</button>{roomTypes.map((type) => <button data-room={type}>{type}</button>)}</div>}
+    <div class="container-wide property-grid">{properties.map((property,index) => <div data-types={property.roomTypes.join(',')}><PropertyCard property={property} index={index} /></div>)}</div>
+  </section>
+  <ContactCTA title="Size uygun projeyi birlikte bulalım." />
+</BaseLayout>
+<script>
+  const filters = [...document.querySelectorAll<HTMLElement>('[data-room]')];
+  const items = [...document.querySelectorAll<HTMLElement>('[data-types]')];
+  filters.forEach((button) => button.addEventListener('click', () => {
+    filters.forEach((item) => item.classList.toggle('is-active', item === button));
+    const value = button.dataset.room ?? 'Tümü';
+    items.forEach((item) => item.hidden = value !== 'Tümü' && !item.dataset.types?.split(',').includes(value));
+  }));
+</script>
+<style>
+  .page-hero p{max-width:58ch;margin:28px 0 0;color:var(--muted);font-size:18px}.hero-label{margin-top:80px}.property-listing{padding:clamp(70px,9vw,130px) 0}.property-filters{margin-bottom:55px;display:flex;gap:10px}.property-filters button{min-width:62px;min-height:44px;padding:8px 15px;border:1px solid var(--border);background:transparent;cursor:pointer}.property-filters button.is-active{color:var(--accent-foreground);background:var(--foreground);border-color:var(--foreground)}.property-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.property-grid>div[hidden]{display:none}@media(max-width:900px){.property-grid{grid-template-columns:1fr 1fr}}@media(max-width:600px){.property-grid{grid-template-columns:1fr}.property-filters{overflow-x:auto}}
+</style>
